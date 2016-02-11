@@ -6,12 +6,12 @@
 
     - name: install puppetabs yum repo
       sudo: yes
-      dnf: name=https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm state=present
+      yum: name=https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm state=present
 
 
     - name: install puppetserver packages
       sudo: yes
-      dnf: name=puppetserver state=latest
+      yum: name=puppetserver state=latest
 
     - name: change memory settings puppetserver
       sudo: yes
@@ -23,6 +23,10 @@
     - name: enable and start puppetserver
       sudo: yes
       service: name=puppetserver enabled=yes state=started
+
+    - name: allow port in firewalld
+      sudo: yes
+      firewalld: port=8140/tcp permanent=true state=enabled
 
   handlers:
     - name: restart puppetserver
