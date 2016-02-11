@@ -1,0 +1,30 @@
+---
+- hosts: all
+  vars:
+    puppetmaster_memory: 512m
+  tasks:
+
+    - name: install puppetabs yum repo
+      sudo: yes
+      dnf: name=https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm state=present
+
+
+    - name: install puppetserver packages
+      sudo: yes
+      dnf: name=puppetserver state=latest
+
+    - name: change memory settings puppetserver
+      sudo: yes
+      template: src=puppetserver.j2 dest=/etc/sysconfig/puppetserver owner=root group=root mode=0644
+      notify:
+        - restart puppetserver
+
+
+    - name: enable and start puppetserver
+      sudo: yes
+      service: name=puppetserver enabled=yes state=started
+
+  handlers:
+    - name: restart puppetserver
+      sudo: yes
+      service: name=puppetserver state=restarted
